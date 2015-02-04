@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head> 
+    <title>Student Info</title>
+</head>
+<body>
+    <h1>Student: {{first_name}} {{last_name}}</h1>
+    <h2>Github account: {{github}}</h2>
+    <div>
+        {% if grades %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Project Name</th>
+                        <th>Points</th>
+                        <th>Total Points</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for project in grades %}
+                    <tr>
+                        <td><a href="{{url_for('show_project')}}?title={{project[0]}}">{{project[0]}}</a></td>
+                        <td>{{project[1]}}</td>
+                        <td>{{project[2]}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}                            
+    </div>
+</body>
+</html>

@@ -15,9 +15,8 @@ def get_student_by_github(github):
     query = """SELECT first_name, last_name, github FROM Students WHERE github = ?"""
     DB.execute(query, (github,))
     row = DB.fetchone()
-    print """\
-Student: %s %s
-Github account: %s"""%(row[0], row[1], row[2])
+    print row
+    return row
 
 
 def make_new_project(title, description, max_grade):
@@ -43,21 +42,15 @@ def add_new_grade(first_name, last_name, project, points):
     DB.execute(query1, (first_name, last_name))
     stu_id = DB.fetchone()[0]
 
-    print "stu_id = ", stu_id
-
     query2 = """ SELECT id FROM Projects WHERE title = ?"""
     DB.execute(query2, (project,))
     pro_id = DB.fetchone()[0]
-
-    print "pro_id = ", pro_id
-
 
     query3 = """INSERT into Grades (stu_id, pro_id, points) values (?, ?, ?)"""
     DB.execute(query3, (stu_id, pro_id, points))
     CONN.commit()
 
     print "Succesfully added grade: %s for project: %s"%(points, project)
-
 
 
 def get_grade_by_student(first_name, last_name, project):
@@ -85,13 +78,25 @@ def show_all_grades(first_name, last_name):
     WHERE stu_id = ? """
     DB.execute(query, (stu_id,))
     row = DB.fetchall()
+    return row
 
-    for project in row:
-        print """\
-Title: %s
-Points: %d 
-Max Grade: %d """%(project[0], project[1], project[2])
+def get_grades_by_project(title):
+    query = """SELECT description, max_grade FROM Projects WHERE title = ?"""
+    DB.execute(query, (title,))
+    headers = DB.fetchone()
 
+    query1 = """SELECT id FROM Projects WHERE title = ?"""
+    DB.execute(query1, (title,))
+    project_id = DB.fetchone()
+    print project_id
+
+    query2 = """SELECT first_name, last_name, points 
+                FROM Students JOIN Grades ON (Students.id=stu_id) 
+                WHERE pro_id = ?"""
+    DB.execute(query2, (project_id))
+    students = DB.fetchall()
+
+    return headers, students
 
 def connect_to_db():
     global DB, CONN
